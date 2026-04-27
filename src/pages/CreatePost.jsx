@@ -11,15 +11,29 @@ function CreatePost({ onThemeChange, currentTheme }) {
   const [imageUrl, setImageUrl] = useState('')
   const [secretKey, setSecretKey] = useState('')
   const [flag, setFlag] = useState('General')
+  const [repostId, setRepostId] = useState('')
   const navigate = useNavigate()
 
   async function handleSubmit(e) {
     e.preventDefault()
     if (!title.trim()) return
 
+    const insertData = {
+      title,
+      content,
+      image_url: imageUrl,
+      upvotes: 0,
+      secret_key: secretKey,
+      flag,
+    }
+
+    if (repostId.trim()) {
+      insertData.repost_id = parseInt(repostId)
+    }
+
     const { data } = await supabase
       .from('posts')
-      .insert([{ title, content, image_url: imageUrl, upvotes: 0, secret_key: secretKey, flag }])
+      .insert([insertData])
       .select()
 
     if (data && data[0]) {
@@ -62,6 +76,16 @@ function CreatePost({ onThemeChange, currentTheme }) {
               placeholder="https://example.com/image.jpg"
               value={imageUrl}
               onChange={e => setImageUrl(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Repost ID 🔁 (Optional — reference another post to create a thread)</label>
+            <input
+              className="form-input"
+              placeholder="Enter a post ID to repost..."
+              value={repostId}
+              onChange={e => setRepostId(e.target.value)}
             />
           </div>
 

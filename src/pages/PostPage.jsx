@@ -7,6 +7,7 @@ function PostPage({ onThemeChange, currentTheme }) {
   const { id } = useParams()
   const navigate = useNavigate()
   const [post, setPost] = useState(null)
+  const [referencedPost, setReferencedPost] = useState(null)
   const [comments, setComments] = useState([])
   const [newComment, setNewComment] = useState('')
   const [isEditing, setIsEditing] = useState(false)
@@ -17,6 +18,7 @@ function PostPage({ onThemeChange, currentTheme }) {
   const [keyError, setKeyError] = useState('')
   const [showKeyPrompt, setShowKeyPrompt] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [repostError, setRepostError] = useState(false)
 
   useEffect(() => {
     supabase
@@ -30,6 +32,18 @@ function PostPage({ onThemeChange, currentTheme }) {
           setEditTitle(data.title)
           setEditContent(data.content || '')
           setEditImageUrl(data.image_url || '')
+
+          if (data.repost_id) {
+            supabase
+              .from('posts')
+              .select()
+              .eq('id', data.repost_id)
+              .single()
+              .then(({ data: refData }) => {
+                if (refData) setReferencedPost(refData)
+                else setRepostError(true)  // FIX 1: show error if referenced post not found
+              })
+          }
         }
         setLoading(false)
       })
@@ -42,6 +56,11 @@ function PostPage({ onThemeChange, currentTheme }) {
   }, [id])
 
   function checkKey(action) {
+    // FIX 2: block edit/delete if post has no secret key
+    if (!post.secret_key) {
+      setKeyError('❌ This post has no secret key and cannot be edited or deleted.')
+      return
+    }
     if (keyInput !== post.secret_key) {
       setKeyError('❌ Wrong secret key. Try again!')
       return
@@ -187,6 +206,42 @@ function PostPage({ onThemeChange, currentTheme }) {
           </div>
         ) : (
           <>
+            {/* FIX 3: show error if repost_id pointed to a nonexistent post */}
+            {repostError && (
+              <div style={{ color: 'var(--danger)', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                ⚠️ Referenced post (ID: {post.repost_id}) could not be found.
+              </div>
+            )}
+
+            {/* Referenced post thread */}
+            {referencedPost && (
+              <div
+                className="card"
+                style={{ cursor: 'pointer', borderColor: 'var(--accent-gold)', marginBottom: '0.5rem', opacity: 0.8 }}
+                onClick={() => navigate(`/post/${referencedPost.id}`)}
+              >
+                <div style={{ fontSize: '0.75rem', color: 'var(--accent-gold)', marginBottom: '0.3rem', fontWeight: '700' }}>
+                  🔁 Referenced Post
+                </div>
+                <div className="card-title" style={{ fontSize: '0.95rem' }}>{referencedPost.title}</div>
+                {referencedPost.content && (
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.3rem' }}>
+                    {referencedPost.content.slice(0, 100)}{referencedPost.content.length > 100 ? '...' : ''}
+                  </div>
+                )}
+                <div style={{ fontSize: '0.75rem', color: 'var(--accent-teal)', marginTop: '0.3rem' }}>
+                  Click to view →
+                </div>
+              </div>
+            )}
+
+            {referencedPost && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', paddingLeft: '1rem' }}>
+                <div style={{ width: '2px', height: '20px', background: 'var(--accent-gold)', opacity: 0.5 }} />
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>replying to above</span>
+              </div>
+            )}
+
             <div className="card" style={{ cursor: 'default' }}>
               <div className="post-header">
                 <div className="post-meta">{new Date(post.created_at).toLocaleDateString()}</div>
