@@ -2,6 +2,17 @@ import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../supabase'
 
+const FLAGS = ['All', 'General', 'Question', 'Opinion', 'Deck List', 'News', 'Humor']
+
+const FLAG_COLORS = {
+  General: '#7b5ea7',
+  Question: '#4ecdc4',
+  Opinion: '#e05c5c',
+  'Deck List': '#c9a84c',
+  News: '#5c9ee0',
+  Humor: '#e0a85c',
+}
+
 function timeAgo(timestamp) {
   const now = new Date()
   const diff = now - new Date(timestamp)
@@ -17,6 +28,7 @@ function Home() {
   const [posts, setPosts] = useState([])
   const [search, setSearch] = useState('')
   const [orderBy, setOrderBy] = useState('created_at')
+  const [activeFlag, setActiveFlag] = useState('All')
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -31,9 +43,9 @@ function Home() {
     return () => { cancelled = true }
   }, [orderBy])
 
-  const filtered = posts.filter(p =>
-    p.title.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = posts
+    .filter(p => activeFlag === 'All' || p.flag === activeFlag)
+    .filter(p => p.title.toLowerCase().includes(search.toLowerCase()))
 
   return (
     <>
@@ -72,10 +84,35 @@ function Home() {
           </button>
         </div>
 
+        {/* Flag filters */}
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+          {FLAGS.map(f => (
+            <button
+              key={f}
+              onClick={() => setActiveFlag(f)}
+              style={{
+                padding: '0.3rem 0.9rem',
+                borderRadius: '20px',
+                border: '1px solid',
+                borderColor: activeFlag === f ? (FLAG_COLORS[f] || 'var(--accent-gold)') : 'var(--border-color)',
+                background: activeFlag === f ? `${FLAG_COLORS[f] ? FLAG_COLORS[f] + '22' : 'rgba(201,168,76,0.1)'}` : 'transparent',
+                color: activeFlag === f ? (FLAG_COLORS[f] || 'var(--accent-gold)') : 'var(--text-secondary)',
+                fontFamily: 'Nunito, sans-serif',
+                fontWeight: '600',
+                fontSize: '0.8rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+
         {filtered.length === 0 ? (
           <div className="empty-state">
             <div className="icon">🎴</div>
-            <p>No posts yet. Be the first to share!</p>
+            <p>No posts found.</p>
           </div>
         ) : (
           filtered.map(post => (
@@ -84,7 +121,22 @@ function Home() {
               className="card"
               onClick={() => navigate(`/post/${post.id}`)}
             >
-              <div className="card-time">{timeAgo(post.created_at)}</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="card-time">{timeAgo(post.created_at)}</div>
+                {post.flag && (
+                  <span style={{
+                    fontSize: '0.75rem',
+                    fontWeight: '700',
+                    padding: '0.2rem 0.7rem',
+                    borderRadius: '20px',
+                    background: `${FLAG_COLORS[post.flag]}22`,
+                    color: FLAG_COLORS[post.flag] || 'var(--accent-gold)',
+                    border: `1px solid ${FLAG_COLORS[post.flag] || 'var(--accent-gold)'}`,
+                  }}>
+                    {post.flag}
+                  </span>
+                )}
+              </div>
               <div className="card-title">{post.title}</div>
               <div className="card-upvotes">⚡ {post.upvotes} upvotes</div>
             </div>

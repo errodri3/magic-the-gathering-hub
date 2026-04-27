@@ -2,11 +2,14 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../supabase'
 
+const FLAGS = ['General', 'Question', 'Opinion', 'Deck List', 'News', 'Humor']
+
 function CreatePost() {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [secretKey, setSecretKey] = useState('')
+  const [flag, setFlag] = useState('General')
   const navigate = useNavigate()
 
   async function handleSubmit(e) {
@@ -15,7 +18,7 @@ function CreatePost() {
 
     const { data } = await supabase
       .from('posts')
-      .insert([{ title, content, image_url: imageUrl, upvotes: 0, secret_key: secretKey }])
+      .insert([{ title, content, image_url: imageUrl, upvotes: 0, secret_key: secretKey, flag }])
       .select()
 
     if (data && data[0]) {
@@ -67,6 +70,34 @@ function CreatePost() {
               value={imageUrl}
               onChange={e => setImageUrl(e.target.value)}
             />
+          </div>
+
+          <div className="form-group">
+            <label>Post Flag 🏷️</label>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              {FLAGS.map(f => (
+                <button
+                  key={f}
+                  type="button"
+                  onClick={() => setFlag(f)}
+                  style={{
+                    padding: '0.4rem 1rem',
+                    borderRadius: '20px',
+                    border: '1px solid',
+                    borderColor: flag === f ? 'var(--accent-gold)' : 'var(--border-color)',
+                    background: flag === f ? 'rgba(201, 168, 76, 0.15)' : 'transparent',
+                    color: flag === f ? 'var(--accent-gold)' : 'var(--text-secondary)',
+                    fontFamily: 'Nunito, sans-serif',
+                    fontWeight: '600',
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="form-group">
