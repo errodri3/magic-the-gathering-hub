@@ -1,33 +1,33 @@
-# Web Development Final Project - _Name of App Here_
+# Web Development Final Project - Magic The Gathering Hub
 
-Submitted by: **Your Name Here**
+Submitted by: Evelyn Rodriguez
 
-This web app: **insert description**
+This web app: A Magic The Gathering Forum that allows users to create posts and see a feed of them on the home page, edit, delete, or leave comments underneath them for discussions, and give upvotes for posts that you like!
 
-Time spent: **X** hours spent in total
+Time spent: 8 hours spent in total
 
 ## Required Features
 
 The following **required** functionality is completed:
 
-- [ ] **Web app includes a create form that allows the user to create posts**
+- [x] **Web app includes a create form that allows the user to create posts**
   - Form requires users to add a post title
   - Forms should have the _option_ for users to add:
     - additional textual content
     - an image added as an external image URL
-- [ ] **Web app includes a home feed displaying previously created posts**
+- [x] **Web app includes a home feed displaying previously created posts**
   - Web app must include home feed displaying previously created posts
   - By default, each post on the posts feed should show only the post's:
     - creation time
     - title
     - upvotes count
   - Clicking on a post should direct the user to a new page for the selected post
-- [ ] **Users can view posts in different ways**
+- [x] **Users can view posts in different ways**
   - Users can sort posts by either:
     - creation time
     - upvotes count
   - Users can search for posts by title
-- [ ] **Users can interact with each post in different ways**
+- [x] **Users can interact with each post in different ways**
   - The app includes a separate post page for each created post when clicked, where any additional information is shown, including:
     - content
     - image
@@ -37,31 +37,31 @@ The following **required** functionality is completed:
     - Each click increases the post's upvotes count by one
     - Users can upvote any post any number of times
 
-- [ ] **A post that a user previously created can be edited or deleted from its post pages**
+- [x] **A post that a user previously created can be edited or deleted from its post pages**
   - After a user creates a new post, they can go back and edit the post
   - A previously created post can be deleted from its post page
 
 The following **optional** features are implemented:
 
-- [ ] Web app implements pseudo-authentication
+- [x] Web app implements pseudo-authentication
   - Users can only edit and delete posts or delete comments by entering the secret key, which is set by the user during post creation
   - **or** upon launching the web app, the user is assigned a random user ID. It will be associated with all posts and comments that they make and displayed on them
   - For both options, only the original user author of a post can update or delete it
-- [ ] Users can repost a previous post by referencing its post ID. On the post page of the new post
+- [x] Users can repost a previous post by referencing its post ID. On the post page of the new post
   - Users can repost a previous post by referencing its post ID
   - On the post page of the new post, the referenced post is displayed and linked, creating a thread
-- [ ] Users can customize the interface
+- [x] Users can customize the interface
   - e.g., selecting the color scheme or showing the content and image of each post on the home feed
-- [ ] Users can add more characterics to their posts
+- [x] Users can add more characterics to their posts
   - Users can share and view web videos
   - Users can set flags such as "Question" or "Opinion" while creating a post
   - Users can filter posts by flags on the home feed
   - Users can upload images directly from their local machine as an image file
-- [ ] Web app displays a loading animation whenever data is being fetched
+- [x] Web app displays a loading animation whenever data is being fetched
 
 The following **additional** features are implemented:
 
-- [ ] List anything else that you added to improve the site's functionality!
+- [x] Flag badges displayed on each post card in the home feed with color coding per flag type
 
 ## Video Walkthrough
 
@@ -71,7 +71,7 @@ Here's a walkthrough of implemented user stories:
 
 <!-- Replace this with whatever GIF tool you used! -->
 
-GIF created with ...
+GIF created with [ScreenToGif](https://www.screentogif.com/) for Windows
 
 <!-- Recommended tools:
 [Kap](https://getkap.co/) for macOS
@@ -82,9 +82,11 @@ GIF created with ...
 
 Describe any challenges encountered while building the app.
 
+- The most challenging part was implementing the repost/thread feature
+
 ## License
 
-    Copyright [yyyy] [name of copyright owner]
+    Copyright 2026 Evelyn Rodriguez
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
