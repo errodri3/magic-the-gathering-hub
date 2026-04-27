@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
+import Navbar from '../components/Navbar'
 
 const FLAGS = ['General', 'Question', 'Opinion', 'Deck List', 'News', 'Humor']
 
-function CreatePost() {
+function CreatePost({ onThemeChange, currentTheme }) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [imageUrl, setImageUrl] = useState('')
@@ -28,15 +29,7 @@ function CreatePost() {
 
   return (
     <>
-      <nav className="navbar">
-        <div className="navbar-brand">
-          <span>🎴</span> MTG Hub
-        </div>
-        <div className="navbar-links">
-          <Link to="/" className="btn-secondary">Home</Link>
-          <Link to="/create" className="btn-primary">+ New Post</Link>
-        </div>
-      </nav>
+      <Navbar onThemeChange={onThemeChange} currentTheme={currentTheme} />
 
       <div className="page-container">
         <div className="form-card">
@@ -112,7 +105,7 @@ function CreatePost() {
           </div>
 
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-            <Link to="/" className="btn-secondary">Cancel</Link>
+            <button className="btn-secondary" onClick={() => navigate('/')}>Cancel</button>
             <button className="btn-primary" onClick={handleSubmit}>
               Post to the Hub 🎴
             </button>

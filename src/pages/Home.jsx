@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
+import Navbar from '../components/Navbar'
 
 const FLAGS = ['All', 'General', 'Question', 'Opinion', 'Deck List', 'News', 'Humor']
 
@@ -24,11 +25,12 @@ function timeAgo(timestamp) {
   return `${mins} minute${mins > 1 ? 's' : ''} ago`
 }
 
-function Home() {
+function Home({ onThemeChange, currentTheme }) {
   const [posts, setPosts] = useState([])
   const [search, setSearch] = useState('')
   const [orderBy, setOrderBy] = useState('created_at')
   const [activeFlag, setActiveFlag] = useState('All')
+  const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -38,7 +40,10 @@ function Home() {
       .select()
       .order(orderBy, { ascending: false })
       .then(({ data }) => {
-        if (!cancelled) setPosts(data || [])
+        if (!cancelled) {
+          setPosts(data || [])
+          setLoading(false)
+        }
       })
     return () => { cancelled = true }
   }, [orderBy])
@@ -49,15 +54,7 @@ function Home() {
 
   return (
     <>
-      <nav className="navbar">
-        <div className="navbar-brand">
-          <span>🎴</span> MTG Hub
-        </div>
-        <div className="navbar-links">
-          <Link to="/" className="btn-secondary">Home</Link>
-          <Link to="/create" className="btn-primary">+ New Post</Link>
-        </div>
-      </nav>
+      <Navbar onThemeChange={onThemeChange} currentTheme={currentTheme} />
 
       <div className="page-container">
         <h1 className="page-heading">The Gathering</h1>
@@ -109,7 +106,12 @@ function Home() {
           ))}
         </div>
 
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="spinner-container">
+            <div className="spinner" />
+            <p className="spinner-text">Summoning posts...</p>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="empty-state">
             <div className="icon">🎴</div>
             <p>No posts found.</p>
@@ -129,7 +131,7 @@ function Home() {
                     fontWeight: '700',
                     padding: '0.2rem 0.7rem',
                     borderRadius: '20px',
-                    background: `${FLAG_COLORS[post.flag]}22`,
+                    background: `${FLAG_COLORS[post.flag] ? FLAG_COLORS[post.flag] + '22' : 'rgba(201,168,76,0.1)'}`,
                     color: FLAG_COLORS[post.flag] || 'var(--accent-gold)',
                     border: `1px solid ${FLAG_COLORS[post.flag] || 'var(--accent-gold)'}`,
                   }}>

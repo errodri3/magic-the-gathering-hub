@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
+import Navbar from '../components/Navbar'
 
-function PostPage() {
+function PostPage({ onThemeChange, currentTheme }) {
   const { id } = useParams()
   const navigate = useNavigate()
   const [post, setPost] = useState(null)
@@ -14,7 +15,8 @@ function PostPage() {
   const [editImageUrl, setEditImageUrl] = useState('')
   const [keyInput, setKeyInput] = useState('')
   const [keyError, setKeyError] = useState('')
-  const [showKeyPrompt, setShowKeyPrompt] = useState(null) // 'edit' or 'delete'
+  const [showKeyPrompt, setShowKeyPrompt] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     supabase
@@ -29,6 +31,7 @@ function PostPage() {
           setEditContent(data.content || '')
           setEditImageUrl(data.image_url || '')
         }
+        setLoading(false)
       })
 
     supabase
@@ -89,19 +92,25 @@ function PostPage() {
     }
   }
 
+  if (loading) return (
+    <>
+      <Navbar onThemeChange={onThemeChange} currentTheme={currentTheme} />
+      <div className="page-container">
+        <div className="spinner-container">
+          <div className="spinner" />
+          <p className="spinner-text">Summoning post...</p>
+        </div>
+      </div>
+    </>
+  )
+
   if (!post) return (
     <>
-      <nav className="navbar">
-        <div className="navbar-brand"><span>🎴</span> MTG Hub</div>
-        <div className="navbar-links">
-          <Link to="/" className="btn-secondary">Home</Link>
-          <Link to="/create" className="btn-primary">+ New Post</Link>
-        </div>
-      </nav>
+      <Navbar onThemeChange={onThemeChange} currentTheme={currentTheme} />
       <div className="page-container">
         <div className="empty-state">
           <div className="icon">🎴</div>
-          <p>Loading post...</p>
+          <p>Post not found.</p>
         </div>
       </div>
     </>
@@ -109,17 +118,10 @@ function PostPage() {
 
   return (
     <>
-      <nav className="navbar">
-        <div className="navbar-brand"><span>🎴</span> MTG Hub</div>
-        <div className="navbar-links">
-          <Link to="/" className="btn-secondary">Home</Link>
-          <Link to="/create" className="btn-primary">+ New Post</Link>
-        </div>
-      </nav>
+      <Navbar onThemeChange={onThemeChange} currentTheme={currentTheme} />
 
       <div className="page-container">
 
-        {/* Secret Key Prompt */}
         {showKeyPrompt && (
           <div className="form-card" style={{ marginBottom: '1.5rem' }}>
             <h3 className="form-title" style={{ fontSize: '1.1rem' }}>
