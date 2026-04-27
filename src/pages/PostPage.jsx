@@ -12,6 +12,9 @@ function PostPage() {
   const [editTitle, setEditTitle] = useState('')
   const [editContent, setEditContent] = useState('')
   const [editImageUrl, setEditImageUrl] = useState('')
+  const [keyInput, setKeyInput] = useState('')
+  const [keyError, setKeyError] = useState('')
+  const [showKeyPrompt, setShowKeyPrompt] = useState(null) // 'edit' or 'delete'
 
   useEffect(() => {
     supabase
@@ -35,6 +38,24 @@ function PostPage() {
       .then(({ data }) => setComments(data || []))
   }, [id])
 
+  function checkKey(action) {
+    if (keyInput !== post.secret_key) {
+      setKeyError('❌ Wrong secret key. Try again!')
+      return
+    }
+    setKeyError('')
+    setShowKeyPrompt(null)
+    setKeyInput('')
+    if (action === 'edit') setIsEditing(true)
+    if (action === 'delete') performDelete()
+  }
+
+  async function performDelete() {
+    await supabase.from('comments').delete().eq('post_id', id)
+    await supabase.from('posts').delete().eq('id', id)
+    navigate('/')
+  }
+
   async function handleUpvote() {
     const { data } = await supabase
       .from('posts')
@@ -42,13 +63,6 @@ function PostPage() {
       .eq('id', id)
       .select()
     if (data && data[0]) setPost(data[0])
-  }
-
-  async function handleDelete() {
-    if (!confirm('Delete this post?')) return
-    await supabase.from('comments').delete().eq('post_id', id)
-    await supabase.from('posts').delete().eq('id', id)
-    navigate('/')
   }
 
   async function handleEdit() {
@@ -104,6 +118,39 @@ function PostPage() {
       </nav>
 
       <div className="page-container">
+
+        {/* Secret Key Prompt */}
+        {showKeyPrompt && (
+          <div className="form-card" style={{ marginBottom: '1.5rem' }}>
+            <h3 className="form-title" style={{ fontSize: '1.1rem' }}>
+              🔐 Enter your secret key to {showKeyPrompt} this post
+            </h3>
+            <div className="form-group">
+              <input
+                className="form-input"
+                type="password"
+                placeholder="Secret key..."
+                value={keyInput}
+                onChange={e => setKeyInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && checkKey(showKeyPrompt)}
+              />
+              {keyError && (
+                <p style={{ color: 'var(--danger)', fontSize: '0.85rem', marginTop: '0.4rem' }}>
+                  {keyError}
+                </p>
+              )}
+            </div>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+              <button className="btn-secondary" onClick={() => { setShowKeyPrompt(null); setKeyError(''); setKeyInput('') }}>
+                Cancel
+              </button>
+              <button className="btn-primary" onClick={() => checkKey(showKeyPrompt)}>
+                Confirm
+              </button>
+            </div>
+          </div>
+        )}
+
         {isEditing ? (
           <div className="form-card">
             <h2 className="form-title">✏️ Edit Post</h2>
@@ -157,8 +204,8 @@ function PostPage() {
               </button>
 
               <div className="post-actions">
-                <button className="btn-secondary" onClick={() => setIsEditing(true)}>✏️ Edit</button>
-                <button className="btn-danger" onClick={handleDelete}>🗑️ Delete</button>
+                <button className="btn-secondary" onClick={() => setShowKeyPrompt('edit')}>✏️ Edit</button>
+                <button className="btn-danger" onClick={() => setShowKeyPrompt('delete')}>🗑️ Delete</button>
               </div>
             </div>
 

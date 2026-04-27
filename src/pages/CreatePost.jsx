@@ -6,6 +6,7 @@ function CreatePost() {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [imageUrl, setImageUrl] = useState('')
+  const [secretKey, setSecretKey] = useState('')
   const navigate = useNavigate()
 
   async function handleSubmit(e) {
@@ -14,7 +15,7 @@ function CreatePost() {
 
     const { data } = await supabase
       .from('posts')
-      .insert([{ title, content, image_url: imageUrl, upvotes: 0 }])
+      .insert([{ title, content, image_url: imageUrl, upvotes: 0, secret_key: secretKey }])
       .select()
 
     if (data && data[0]) {
@@ -65,6 +66,17 @@ function CreatePost() {
               placeholder="https://example.com/image.jpg"
               value={imageUrl}
               onChange={e => setImageUrl(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Secret Key 🔐 (used to edit or delete your post later)</label>
+            <input
+              className="form-input"
+              type="password"
+              placeholder="Choose a secret key you'll remember"
+              value={secretKey}
+              onChange={e => setSecretKey(e.target.value)}
             />
           </div>
 
