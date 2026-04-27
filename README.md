@@ -1,10 +1,10 @@
-# Web Development Final Project - Magic The Gathering Hub
+# Web Development Final Project - **Magic The Gathering Hub**
 
-Submitted by: Evelyn Rodriguez
+Submitted by: **Evelyn Rodriguez**
 
-This web app: A Magic The Gathering Forum that allows users to create posts and see a feed of them on the home page, edit, delete, or leave comments underneath them for discussions, and give upvotes for posts that you like!
+This web app: **A Magic The Gathering Forum that allows users to create posts and see a feed of them on the home page, edit, delete, or leave comments underneath them for discussions, and give upvotes for posts that you like!**
 
-Time spent: 8 hours spent in total
+Time spent: **8** hours spent in total
 
 ## Required Features
 
